@@ -7,7 +7,7 @@ jQuery(document).ready(function ($) {
     // Lead Gateway configuration
     const LEAD_API_URL = "https://lead-gateway-henna.vercel.app/api/leads";
     const LEAD_API_KEY = "b0ffff3c2299551401bdfcf35ea9be8283c0aab612cc0241c5d813e4f0f2a393";
-    const LEAD_WEBSITE_ID = "website-b";
+    const LEAD_WEBSITE_ID = "website-c";
 
     /**
      * Collect and format form data
@@ -37,8 +37,7 @@ jQuery(document).ready(function ($) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-api-key": LEAD_API_KEY,
-                "cache-control": "no-cache"
+                "x-api-key": LEAD_API_KEY
             },
             data: JSON.stringify(payload)
         };
