@@ -1,57 +1,46 @@
 /**
- * Telegram Bot Contact Form Integration
- * Handles form submission and sends messages to Telegram chat
+ * Lead Gateway Contact Form Integration
+ * Handles form submission and sends the lead to the Lead Gateway API
  */
 
 jQuery(document).ready(function ($) {
-    // Telegram bot configuration
-    const TELEGRAM_BOT_TOKEN = "8704884272:AAGagkO7hq-_qJRF6yn0BZX-7gTiZMx8XJA";
-    // const TELEGRAM_CHAT_ID = "5211441236";
-    const TELEGRAM_CHAT_ID = "-1003772996589";
+    // Lead Gateway configuration
+    const LEAD_API_URL = "https://lead-gateway-henna.vercel.app/api/leads";
+    const LEAD_API_KEY = "b0ffff3c2299551401bdfcf35ea9be8283c0aab612cc0241c5d813e4f0f2a393";
+    const LEAD_WEBSITE_ID = "website-b";
 
-    // var chat_id = "-1003772996589";
     /**
      * Collect and format form data
-     * @returns {string} Formatted message for Telegram
+     * @returns {object} Lead payload for the API
      */
-    const prepareMessage = function () {
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const subject = document.getElementById("subject").value.trim();
-        const message = document.getElementById("message").value.trim();
-
-        return `🔔 New Inquiry from RockChain Website:
-
-👤 Name: ${name}
-📧 Email: ${email}
-📱 Phone: ${phone}
-📋 Subject: ${subject}
-💬 Message: ${message}
-
----
-Sent from contact form`;
+    const preparePayload = function () {
+        return {
+            website: LEAD_WEBSITE_ID,
+            name: document.getElementById("name").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            subject: document.getElementById("subject").value.trim(),
+            message: document.getElementById("message").value.trim(),
+            source: "contact-form"
+        };
     };
 
     /**
-     * Send message to Telegram via Bot API
-     * @param {string} message - Formatted message text
+     * Send lead to the Lead Gateway API
+     * @param {object} payload - Lead data payload
      */
-    const sendToTelegram = function (message) {
+    const sendLead = function (payload) {
         const settings = {
             async: true,
             crossDomain: true,
-            url: `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+            url: LEAD_API_URL,
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "x-api-key": LEAD_API_KEY,
                 "cache-control": "no-cache"
             },
-            data: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: "HTML"
-            })
+            data: JSON.stringify(payload)
         };
 
         $.ajax(settings)
@@ -59,7 +48,7 @@ Sent from contact form`;
                 showNotification("✅ Your message has been sent successfully! We will contact you soon.", "success");
             })
             .fail(function (error) {
-                console.error("Telegram API Error:", error);
+                console.error("Lead Gateway API Error:", error);
                 showNotification("⚠️ There was an error sending your message. Please try again or contact us directly.", "error");
             });
     };
@@ -120,8 +109,8 @@ Sent from contact form`;
         contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
             
-            const message = prepareMessage();
-            sendToTelegram(message);
+            const payload = preparePayload();
+            sendLead(payload);
             resetForm();
         });
     }
